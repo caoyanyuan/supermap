@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>分层分户查询</title>
+    <link href="../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script type="text/javascript" src="./js/require.min.js" data-main="js/main"></script>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<div id="bubble" class="bubble" style="bottom:0;left:82%;display:none;width: 400px" >
+    <div id="tools" style="text-align : right">
+        <span  style="color: rgb(95, 74, 121);padding: 5px;position: absolute;left: 10px;top: 4px;">对象属性</span>
+        <span class="fui-export" id="bubblePosition" style="color: darkgrey; padding:5px" title="停靠"></span>
+        <span  class="fui-cross" title="关闭" id="close" style="color: darkgrey;padding:5px"></span>
+    </div>
+    <div style="overflow-y:scroll;height:190px" id="tableContainer"><table id="tab"></table></div>
+</div>
+<script type="text/javascript">
+    /*示范代码说明：
+     *分层分户信息查询
+     *
+     *主要涉及接口：
+     *setQueryParameter
+     *setPolygonoffset
+     *
+     * 示范代码：
+    */
+    function onload(Cesium) {
+        var viewer = new Cesium.Viewer('cesiumContainer');
+        var scene = viewer.scene;
+        scene.screenSpaceCameraController.enableIndoorColliDetection = true;
+        var infoboxContainer = document.getElementById("bubble");
+        viewer.customInfobox = infoboxContainer;
+
+        var promise = scene.addS3MTilesLayerByScp(URL_CONFIG.SCP_FCFH_QX,{ // 分层分户倾斜摄影图层
+            name : 'fcfh_qx'
+        });
+        promise.then(function(layer){
+            layer.selectEnabled = false;
+            scene.camera.setView({
+                destination : new Cesium.Cartesian3.fromDegrees(108.343473097862770 ,22.850425573506058, 500),
+            });
+            var promise2 = scene.addS3MTilesLayerByScp(URL_CONFIG.SCP_FCFH_VECTOR_EXTRUDE,{ // 分层分户矢量图层
+                name : 'fcfh_vector',
+                polygonOffset: {
+                    enabled: true,
+                    factor: -50,
+                    units: 1
+                }
+            });
+            promise2.then(function(vectorLayer){
+                vectorLayer.cullEnabled =false;
+                vectorLayer.style3D._fillForeColor.alpha = 0;
+                vectorLayer.selectionFiltrateByTransparency = 0; // 不过滤透明度为0的物体，当前图层就不会被过滤
+                vectorLayer.selectColorType = 1.0;
+                vectorLayer.selectedColor = Cesium.Color.RED;
+                vectorLayer.selectedColor.alpha = 0.2;
+
+                vectorLayer.setQueryParameter({//设置查询参数
+                    url: URL_CONFIG.SCP_FCFH_DATA,
+                    dataSourceName: '户型面',
+                    dataSetName: '专题户型线_split_1_1',
+                    keyWord: 'SmID'
+                });
+            });
+
+            var table = document.getElementById("tab");
+
+            viewer.pickEvent.addEventListener(function(feature){
+                $("#bubble").show();
+                for (var i = table.rows.length-1;i > -1;i--){
+                    table.deleteRow(i);
+                }
+                for(var key in feature ){
+                    var newRow = table.insertRow();
+                    var cell1 = newRow.insertCell();
+                    var cell2 = newRow.insertCell();
+                    cell1.innerHTML = key;
+                    cell2.innerHTML = feature[key];
+                }
+            });
+
+            $("#bubblePosition").click(function(){
+                if($("#bubblePosition").hasClass("fui-export")){
+                    viewer.customInfobox = undefined;
+                    $("#bubble").removeClass("bubble").addClass("float");
+                    $("#bubblePosition").removeClass("fui-export").addClass("fui-bubble");
+                    $("#bubblePosition")[0].title = "悬浮";
+                    $("#bubble").css({'left' : '82%','bottom' : '45%'});
+                    $("#tableContainer").css({'height':'350px'});
+                }
+                else if($("#bubblePosition").hasClass("fui-bubble")){
+                    $("#bubble").removeClass("float").addClass("bubble");
+                    $("#bubblePosition").removeClass("fui-bubble").addClass("fui-export");
+                    $("#bubblePosition")[0].title = "停靠";
+                    $("#tableContainer").css({'height':'150px'});
+                    viewer.customInfobox = infoboxContainer;
+                }
+            });
+            $("#close").click(function(){
+                $("#bubble").hide();
+            });
+        });
+
+
+    }
+    </script>
+</body>
+</html>

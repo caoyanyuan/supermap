@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>卷帘</title>
+    <link href="../Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script type="text/javascript" src="./js/require.min.js" data-main="js/main"></script>
+</head>
+<body>
+<div id="cesiumContainer">
+    <div id="vertical-slider"></div>
+    <div id="horizontal-slider" style="display: none;"></div>
+</div>
+<div id="tool-bar" class="param-container tool-bar">
+    <div id="legend" class="legend">
+        <div class="legend-item"><input id="disable-roller" type="radio" name="split-direction" value="disable-roller"/><label for="disable-roller">禁用卷帘</label></div>
+        <div class="legend-item"><input id="hide-left" type="radio" name="split-direction" value="hide-left"/><label for="hide-left">屏蔽左侧</label></div>
+        <div class="legend-item"><input id="hide-right" type="radio" name="split-direction" value="hide-right" checked/><label for="hide-right">屏蔽右侧</label></div>
+        <div class="legend-item"><input id="hide-top" type="radio" name="split-direction" value="hide-top"/><label for="hide-top">屏蔽上方</label></div>
+        <div class="legend-item"><input id="hide-bottom" type="radio" name="split-direction" value="hide-bottom"/><label for="hide-bottom">屏蔽下方</label></div>
+    </div>
+</div>
+<script type="text/javascript">
+    /* 示范代码说明：
+     * 水平和竖直卷帘。
+     *
+     * 主要涉及接口：
+     * S3MTilesLayer.prototype.splitDirection 卷帘分割方向
+     *      可取值： Cesium.SplitDirection.NONE 禁用卷帘
+     *              Cesium.SplitDirection.LEFT 屏蔽左侧
+     *              Cesium.SplitDirection.RIGHT 屏蔽右侧
+     *              Cesium.SplitDirection.TOP 屏蔽上方
+     *              Cesium.SplitDirection.BOTTOM 屏蔽下方
+     *
+     * S3MTilesLayer.prototype.splitPosition 卷帘分割位置，像素为单位
+     *
+     * 示范代码：
+     */
+    function onload(Cesium) {
+        let viewer = new Cesium.Viewer('cesiumContainer',{
+            imageryProvider: new Cesium.BingMapsImageryProvider({
+                url : 'https://dev.virtualearth.net',
+                mapStyle : Cesium.BingMapsStyle.AERIAL,
+                key : URL_CONFIG.BING_MAP_KEY
+            })
+        });
+        let scene = viewer.scene;
+        let widget = viewer.cesiumWidget;
+        try{
+            let promise = scene.open('http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace');
+            Cesium.when(promise,function(layers){
+                scene.camera.setView({
+                    destination : new Cesium.Cartesian3(-2179147.1754770577, 4380398.6133004315, 4092339.895225123),
+                    orientation : {
+                        heading : 0.5500959500406575,
+                        pitch : -0.18431625594320877,
+                        roll : 1.0658141036401503e-14
+                    }
+                });
+                let windowWidth = $('body').width(); // 窗口宽度
+                let windowHeight = $('body').height(); // 窗口高度
+                let rollerShutterConfig = { // 卷帘配置参数，以对象方式实现地址传递
+                    splitDirection: Cesium.SplitDirection.RIGHT, // 初始时隐藏卷帘右侧
+                    verticalSplitPosition: windowWidth / 2,
+                    horizontalSplitPosition: windowHeight / 2
+                };
+                initRollerShutter(layers, rollerShutterConfig);
+            },function(e){
+                if (widget._showRenderLoopErrors) {
+                    var title = '加载SCP失败，请检查网络连接状态或者url地址是否正确？';
+                    widget.showErrorPanel(title, undefined, e);
+                }
+            });
+        }
+        catch(e){
+            if (widget._showRenderLoopErrors) {
+                let title = '渲染时发生错误，已停止渲染。';
+                widget.showErrorPanel(title, undefined, e);
+            }
+        }
+    }
+    /**
+     * 初始化卷帘。设置分割条初始位置及绑定相关事件。
+     * @param layers 通过卷帘设置显隐的S3M图层。
+     * @param rollerShutterConfig 卷帘配置参数。
+     */
+    function initRollerShutter(layers, rollerShutterConfig){
+        setRollerShutterSplit(layers, rollerShutterConfig);
+        bindSliderEvt(layers, rollerShutterConfig);
+        $('input[type=radio]').on('input propertychange', function(){
+            let splitDirectionCustomStr = $('input[type=radio]:checked').val();
+            let verticalSlider = document.getElementById('vertical-slider');
+            let horizontalSlider = document.getElementById('horizontal-slider');
+            switch (splitDirectionCustomStr){
+                case 'disable-roller':
+                    verticalSlider.style.display = 'none';
+                    horizontalSlider.style.display = 'none';
+                    rollerShutterConfig.splitDirection = Cesium.SplitDirection.NONE;
+                    break;
+                case 'hide-left':
+                    verticalSlider.style.display = 'block';
+                    horizontalSlider.style.display = 'none';
+                    rollerShutterConfig.splitDirection = Cesium.SplitDirection.LEFT;
+                    break;
+                case 'hide-right':
+                    verticalSlider.style.display = 'block';
+                    horizontalSlider.style.display = 'none';
+                    rollerShutterConfig.splitDirection = Cesium.SplitDirection.RIGHT;
+                    break;
+                case 'hide-top':
+                    verticalSlider.style.display = 'none';
+                    horizontalSlider.style.display = 'block';
+                    rollerShutterConfig.splitDirection = Cesium.SplitDirection.TOP;
+                    break;
+                case 'hide-bottom':
+                    verticalSlider.style.display = 'none';
+                    horizontalSlider.style.display = 'block';
+                    rollerShutterConfig.splitDirection = Cesium.SplitDirection.BOTTOM;
+                    break;
+                default:
+                    break;
+            }
+            setRollerShutterSplit(layers, rollerShutterConfig);
+        });
+    }
+
+    /**
+     * 注册卷帘分割条的拖拽事件。
+     * @param layers 通过卷帘设置显隐的S3M图层。
+     * @param rollerShutterConfig 卷帘配置参数。
+     */
+    function bindSliderEvt(layers, rollerShutterConfig){
+        let verticalSlider = document.getElementById('vertical-slider');
+        let horizontalSlider = document.getElementById('horizontal-slider');
+        verticalSlider.addEventListener('mousedown', mouseDown, false);
+        horizontalSlider.addEventListener('mousedown', mouseDown, false);
+        let windowWidth = $('body').width();
+        let windowHeight = $('body').height();
+        document.addEventListener('mouseup', mouseUp, false);
+        function mouseUp(e) {
+            document.removeEventListener('mousemove', sliderMove, false);
+        }
+        function mouseDown(e) {
+            document.addEventListener('mousemove', sliderMove, false);
+        }
+        function sliderMove(e) { // 鼠标拖拽时执行
+            //解决拖拽鼠标粘滞的bug
+            if(e.preventDefault){
+                e.preventDefault();
+            }else{
+                e.returnValue = false;
+            }
+            if(rollerShutterConfig.splitDirection === Cesium.SplitDirection.LEFT || rollerShutterConfig.splitDirection === Cesium.SplitDirection.RIGHT){
+                verticalSlider.style.left = e.clientX + 'px';
+                rollerShutterConfig.verticalSplitPosition = e.clientX;
+            }else if(rollerShutterConfig.splitDirection === Cesium.SplitDirection.TOP || rollerShutterConfig.splitDirection === Cesium.SplitDirection.BOTTOM){
+                let clientY = e.clientY;
+                if(clientY < 0){
+                    clientY = 0;
+                }else if(clientY > windowHeight){
+                    clientY = windowHeight - $('#horizontal-slider').height();
+                }
+                horizontalSlider.style.top = clientY + 'px';
+                rollerShutterConfig.horizontalSplitPosition = windowHeight - clientY;
+                console.log(clientY);
+            }
+            setRollerShutterSplit(layers, rollerShutterConfig);
+        }
+    }
+
+    /**
+     * 设置卷帘的分割方向及分割条的位置。
+     * @param layers 通过卷帘设置显隐的S3M图层。
+     * @param rollerShutterConfig 卷帘配置参数。
+     */
+    function setRollerShutterSplit(layers, rollerShutterConfig){
+        let splitPosition = null;
+        if(rollerShutterConfig.splitDirection === Cesium.SplitDirection.LEFT || rollerShutterConfig.splitDirection === Cesium.SplitDirection.RIGHT){
+            splitPosition = rollerShutterConfig.verticalSplitPosition;
+
+        }else if(rollerShutterConfig.splitDirection === Cesium.SplitDirection.TOP || rollerShutterConfig.splitDirection === Cesium.SplitDirection.BOTTOM){
+            splitPosition = rollerShutterConfig.horizontalSplitPosition;
+        }
+        for(let layer of layers){
+            layer.splitDirection = rollerShutterConfig.splitDirection;
+
+            if(splitPosition != null){ // 在没有禁用卷帘的情况下有必要设卷帘分割位置
+                layer.splitPosition = splitPosition;
+            }
+        }
+    }
+</script>
+</body>
+</html>
