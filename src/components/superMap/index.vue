@@ -11,9 +11,9 @@
 
 <script>
      
-import defCtl from '@/Model/superMap/CesiumCtl' 
-import MapCtl from '@/Model/superMap/Class/MapCtl'
-import LayersCtl from '@/Model/superMap/LayersCtl'
+import defCtl from '@/Model/CesiumCtl' 
+import MapCtl from '@/Model/Class/MapCtl'
+import LayersCtl from '@/Model/LayersCtl'
 
 import layersName from '@/config/superMap/layersName'
 
@@ -54,7 +54,6 @@ export default {
         },
         initMap() {
             this.ctl.init()
-            
            
             if(this.layer) {
                 LayersCtl.all(layersName, layers => {
@@ -84,7 +83,7 @@ export default {
             
             this.setMapSize()
             this.initMap()
-            this.ctl.promise.then( () => this.ctl.setView(  ) )
+            this.ctl.promise.then( () => this.ctl.setView( 'DEF' ) )
         })
 
      
