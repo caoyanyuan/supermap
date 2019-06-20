@@ -11,9 +11,9 @@
 
 <script>
      
-import defCtl from '@/Model/CesiumCtl' 
-import MapCtl from '@/Model/Class/MapCtl'
-import LayersCtl from '@/Model/LayersCtl'
+import defCtl from '@/map/Model/CesiumCtl' 
+import MapCtl from '@/map/Model/Class/MapCtl'
+import LayersCtl from '@/map/Model/LayersCtl'
 
 import layersName from '@/config/superMap/layersName'
 

@@ -5,7 +5,7 @@
 </template> 
 
 <script>
-import SuperMap from '@/components/superMap'
+    import SuperMap from '@/components/superMap'
 
 export default {
     name: 'map2',
