@@ -79,10 +79,10 @@ export default class Entites {
         this[ _onClick ] = this[ _onClick ].bind( this )
 
         // 处理图片
-        if ( opt && opt.billboardOpt && opt.billboardOpt.image ) {
-            console.log(opt.billboardOpt.image)
-            opt.billboardOpt.image = Vue.filter( 'getSrc' )( opt.billboardOpt.image )
-        }
+        // if ( opt && opt.billboardOpt && opt.billboardOpt.image ) {
+        //     console.log(opt.billboardOpt.image)
+        //     opt.billboardOpt.image = Vue.filter( 'getSrc' )( opt.billboardOpt.image )
+        // }
 
         // 注册点击事件
         this.init( ctl )
