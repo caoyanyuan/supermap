@@ -19,8 +19,8 @@
         - Layer
         - MapCtl
     - methods
-        - CesiumCtl
-        - Entites
+        - CesiumCtl   默认地图的控制器， 超图三次封装，以备拓展
+        - Entites     二次封装 entity 类
         - LayersCtl
 
 
