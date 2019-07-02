@@ -9,6 +9,8 @@ export default {
     mounted() {
         let ctl = this.$refs.map.ctl
         HealthPoint.init( ctl )
+        console.log(HealthPoint)
     },
+}
 </script>
 

@@ -52,6 +52,7 @@ export default class PointAbs {
     }
 
     static init ( ctl ) {
+        console.log('init>>',this.entites)
         this.entites.init( ctl )
     }
 

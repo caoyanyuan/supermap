@@ -26,6 +26,7 @@ export default class ShipPoint extends PointAbs {
 
         super( { positions: option.positions }, data )
         Object.assign( this, option )
+        alert('12')
         this.draw()
     }
 
@@ -43,7 +44,9 @@ export default class ShipPoint extends PointAbs {
                 +(point.height||0) + 1
             )
         } )
+        
         this.constructor.entites.add( this.entity, true )
+        
     }
 
     draw () {
@@ -51,7 +54,9 @@ export default class ShipPoint extends PointAbs {
     }
 
     _draw () {
+        alert('1223')
         this.createEntity( this.positions[ 0 ] )
+        console.log('createEntity:', this)
     }
 
     /**
