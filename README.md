@@ -24,6 +24,9 @@
     - Entites     二次封装 entity 类
     - LayersCtl   对象  加载所有的layer实例
 
+- views
+    - health  
+
 
 
 #### 初始化
@@ -31,7 +34,10 @@
     MapCtl -> CesiumCtl
 
 
-
+#### 卫生管理
+    撒点
+    ps: 这里的继承 只是继承了静态方法，不是完全的继承
+    HealthPoint -> ShipPointAbs ->  PointAbs
 
 
 

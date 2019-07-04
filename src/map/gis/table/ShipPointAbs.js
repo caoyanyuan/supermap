@@ -26,7 +26,7 @@ export default class ShipPoint extends PointAbs {
 
         super( { positions: option.positions }, data )
         Object.assign( this, option )
-        alert('12')
+        
         this.draw()
     }
 
