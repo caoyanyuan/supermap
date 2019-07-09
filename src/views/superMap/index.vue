@@ -1,6 +1,8 @@
 <template>
     <div class="main-page">
         <super-map layer></super-map>
+
+        <router-view/>
     </div>
 </template> 
 
