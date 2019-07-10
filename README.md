@@ -8,14 +8,13 @@
     - ship-hkm                  港澳渔船
     - ship-local                本地渔船
 - Event
-    - Coordinate
-        - CoordinateEvent
-       
+    - Coordinate                坐标类
+        - CoordinateEvent       坐标对象组
+        - Pick                  坐标拾取        --  Sensor  
     - AbstractEvent             自定义事件
     - Emitter                   封装 $.Callback 
-    - Sensor                                       
+    - Sensor                                                       
     - SensorEvent
-
 - gis
     - shipPoint                 渔船的子类  一种渔船都对应着entity
         - all                   gis页面上所有渔船  负责统一操作页面里面的渔船  -- ShipAllAbs
