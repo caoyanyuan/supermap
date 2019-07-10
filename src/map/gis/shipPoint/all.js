@@ -1,11 +1,11 @@
 import ShipAllAbs from '@map/gis/table/ShipAllAbs'
 
 import Entites from '@map/Model/Entites'
-// import Ais from '@map/gis/shipPoint/ais'
-// import Beidou from '@map/gis/shipPoint/beidou'
-// import Local from '@map/gis/shipPoint/local'
-// import Hkm from '@map/gis/shipPoint/hkm'
-// import { defer } from 'lodash'
+import Ais from './ais'
+import Beidou from './beidou'
+import Local from './local'
+import Hkm from './hkm'
+import { defer } from 'lodash'
 
 
 let allEns = new Entites ( {
