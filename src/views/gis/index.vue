@@ -13,7 +13,7 @@ import Beidou from '@map/gis/shipPoint/beidou'
 import Local from '@map/gis/shipPoint/local'
 import Hkm from '@map/gis/shipPoint/hkm'
 
-
+import ParkPoint from '@map/gis/table/ParkPoint'
 
 export default {
     methods: {

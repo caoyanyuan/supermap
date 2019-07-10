@@ -15,16 +15,17 @@
     - SensorEvent
 - gis
     - shipPoint                 渔船的子类  一种渔船都对应着entity
-        - all                   gis页面上所有渔船  负责统一操作页面里面的渔船 -- ShipAllAbs
-        - ais                   ais所有渔船 -- ShipPointAbs
-        - beidou                北斗所有渔船 -- ShipPointAbs
-        - hkm                   港澳所有渔船 -- ShipPointAbs
-        - local                 本地渔船     -- ShipPointAbs
+        - all                   gis页面上所有渔船  负责统一操作页面里面的渔船  -- ShipAllAbs
+        - ais                   ais所有渔船         -- ShipPointAbs
+        - beidou                北斗所有渔船        -- ShipPointAbs
+        - hkm                   港澳所有渔船        -- ShipPointAbs
+        - local                 本地渔船            -- ShipPointAbs
     - table                     地图上要显示的渔船以及区域各种点的类
         - PointAbs              对于entity实例的操作  基类 
-        - ShipPointAbs          重点关注渔船  -- PointAbs
-        - ShipAllAbs            所有渔船      -- ShipPointAbs
-
+        - ShipPointAbs          重点关注渔船        -- PointAbs
+        - ShipAllAbs            所有渔船            -- ShipPointAbs
+        - AreaAbs               画一块区域          -- PointAbs    
+        - ParkPointAbs          泊位管理            -- AreaAbs
 - Model
     - Class
         - EntitesClickEvent
