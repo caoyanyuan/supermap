@@ -15,6 +15,7 @@ import Hkm from '@map/gis/shipPoint/hkm'
 
 import ParkPoint from '@map/gis/table/ParkPoint'
 import EventPoint from '@map/gis/table/EventPoint'
+import WaterPoint from '@map/gis/table/WaterPoint'
 
 export default {
     methods: {
