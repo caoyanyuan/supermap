@@ -10,13 +10,16 @@
 - Event
     - Coordinate
         - CoordinateEvent
-    - AbstractEvent 
+       
+    - AbstractEvent             自定义事件
     - Emitter                   封装 $.Callback 
+    - Sensor                                       
     - SensorEvent
+
 - gis
     - shipPoint                 渔船的子类  一种渔船都对应着entity
         - all                   gis页面上所有渔船  负责统一操作页面里面的渔船  -- ShipAllAbs
-        - ais                   ais所有渔船         -- ShipPointAbs
+        - ais                   ais所有渔船        -- ShipPointAbs
         - beidou                北斗所有渔船        -- ShipPointAbs
         - hkm                   港澳所有渔船        -- ShipPointAbs
         - local                 本地渔船            -- ShipPointAbs
@@ -56,14 +59,6 @@
 
     HealthPoint -> ShipPointAbs ->  PointAbs
 
-#### test UML
-```
-graph LR;
-  A-->B
-  B-->C
-  C-->D
-  D-->A
-```
 
 
 
