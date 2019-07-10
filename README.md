@@ -14,7 +14,7 @@
     - Emitter                   封装 $.Callback 
     - SensorEvent
 - gis
-    - shipPoint                 渔船的子类  一种渔船都对应这entity
+    - shipPoint                 渔船的子类  一种渔船都对应着entity
         - all                   gis页面上所有渔船  负责统一操作页面里面的渔船 -- ShipAllAbs
         - ais                   ais所有渔船 -- ShipPointAbs
         - beidou                北斗所有渔船 -- ShipPointAbs
