@@ -26,6 +26,7 @@
         - ShipAllAbs            所有渔船            -- ShipPointAbs
         - AreaAbs               画一块区域          -- PointAbs    
         - ParkPointAbs          泊位管理            -- AreaAbs
+        - EventPoint            事件管理            -- PointAbs
 - Model
     - Class
         - EntitesClickEvent
