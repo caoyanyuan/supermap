@@ -2,7 +2,9 @@
     <div class="main-page">
         <super-map layer></super-map>
 
-        <router-view/>
+        <keep-alive>
+            <router-view></router-view>
+        </keep-alive>
     </div>
 </template> 
 
