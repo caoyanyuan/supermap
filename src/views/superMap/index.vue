@@ -1,6 +1,10 @@
 <template>
     <div class="main-page">
         <super-map layer></super-map>
+
+        <keep-alive>
+            <router-view></router-view>
+        </keep-alive>
     </div>
 </template> 
 

@@ -54,7 +54,6 @@ export default class ShipPoint extends PointAbs {
     }
 
     _draw () {
-        alert('1223')
         this.createEntity( this.positions[ 0 ] )
         console.log('createEntity:', this)
     }
