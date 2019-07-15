@@ -4,7 +4,7 @@ import SuperMap from '@/views/superMap/index'
 import Health from '@/views/superMap/health/health'
 
 const Gis = () => import('@/views/gis')
-const Playback = () => import('@/views/gis/playback')
+const Playback = () => import('@/views/track')
 
 Vue.use(Router)
 
