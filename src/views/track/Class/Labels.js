@@ -1,4 +1,4 @@
-export default class TrackPoint {
+export default class Label {
     constructor() {
         
     }
