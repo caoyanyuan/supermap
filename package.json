@@ -10,10 +10,11 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.19.0",
+    "element-ui": "^2.10.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "zp-z": "^0.3.2",
-    "element-ui": "^2.10.1"
+    "zp-z": "^0.3.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
