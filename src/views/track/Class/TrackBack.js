@@ -38,9 +38,6 @@ const _timeArr = Symbol( 'timeArr' )
 const _percent = Symbol( 'percent' )
 const _stateForTrack = Symbol( 'stateForTrack' )
 
-
-
-
 export default class TrackBack {
     /**
      * @constructor
@@ -78,14 +75,16 @@ export default class TrackBack {
 
         /**初始化设置 */
         this.setting()
-
-        this[ points ] = []                     // 动态点集合
+       
         this.points = [ /* positions[ 0 ] */ ]  // 实际绘制的轨迹点数
         this.allQue = []                          // Array<TWEEN.Tween>   总的
         this.curQue = []                          // Array<TWEEN.Tween>    当前
         this[ _timeArr ] = []                   // 记录每个补间所需时间
         this[ _percent ] = 0                    // 当前百分比
-
+        this[ points ] = []                     // 动态点集合
+       
+        let startPoint = this.positions[ 0 ]
+        this[ points ].push( startPoint.lng, startPoint.lat )
         
         this[ promise ] = new Promise( ( re ) => re() )     // 动画添加点的 promise 对象
         //this[ animate ] = this[ animate ].bind( this )
@@ -101,10 +100,10 @@ export default class TrackBack {
          let scaleH = ( window.innerHeight / 1080 ) || .5
          let _w = 56 * scaleW
          let _h = 63 * scaleW
-         
+        
          // 广告牌设置
          this.billboardOpt = {
-            image: ICON_SHIP,
+            image: ICON_START,
             width: _w,
             height: _h,
             // sizeInMeters: true,
@@ -134,7 +133,62 @@ export default class TrackBack {
     }
 
     init() {
+        this.reset()
+        this.corridor.destory()
+        
+        let firstPoint = new Cesium.Entity( {
+            corridor: {
+                show: true,
+                width: 5,
+                outline: false,
+                material: new Cesium.Color( 40 / 255, 148 / 255, 240 / 255, 1 ),
+                positions: new Cesium.CallbackProperty( () => {
+                    return Cesium.Cartesian3.fromDegreesArray( this[ points ] )
+                }, false )
+            }
+        } )
+        this.corridor.add( firstPoint )
+        
+        //debugger
+        return this
+    }
 
+    reset() {
+        this.cancelAnimationFrame()
+        //this.labels.destroy()
+        this[ _timeArr ] = []
+        this[ _percent ] = -1
+
+        let startPoint = this.points[ 0 ]
+        // this[ points ] = [ startPoint.lng, startPoint.lat ]
+        // this.points.splice( 0 )
+        // this.points.push( this.data[ 0 ] )
+        this.billboards.destory()
+        this.billboards.add( this.drawEntity( startPoint ) )
+    }
+
+    drawEntity(point) {
+        let billboard = {
+            ...this.billboardOpt
+        }
+
+        if ( this.current === 1 ) { // 初始位置
+            billboard.image = start
+        }
+
+        return new Cesium.Entity( {
+            billboard,
+            // label: this.labelOpt,
+            position: Cesium.Cartesian3.fromDegrees(
+                point.lng,
+                point.lat,
+                point.height + 1
+            )
+        } )
+    }
+
+    cancelAnimationFrame() {
+        window.cancelAnimationFrame( this[ TIMER ] )
     }
     
     get length() {

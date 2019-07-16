@@ -23,7 +23,6 @@ import TrackBack from './Class/TrackBack'
 import Labels from './Class/Labels'
 import Vue from 'vue'
 
-
 export default {
     name: 'gis-player',
 
