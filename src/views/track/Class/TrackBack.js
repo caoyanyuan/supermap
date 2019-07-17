@@ -17,6 +17,11 @@ const MODE = {
 
 const STEP = Symbol( 'step' )
 const TIMER = Symbol( 'timer' )
+
+/*四种状态
+    STOP 停止状态，最开始的初始状态
+    PLAY 播放中     PAUSE 暂停  COMPLETE播放完了
+*/
 const STOP = Symbol( 'stop' )
 const PLAY = Symbol( 'play' )
 const PAUSE = Symbol( 'pause' )
@@ -91,7 +96,7 @@ export default class TrackBack {
         this.Emitter = new Emitter()
 
         this.calcTime()             //时间的计算
-        this.init()                 //显示第一个点
+        this.init()                 //显示起点 ，走廊插入第一个点
     }
 
     setting() {
@@ -153,6 +158,55 @@ export default class TrackBack {
         return this
     }
 
+    /**
+     * 点播放的事件 此时播放器存在各种状态
+     */
+    play() {
+        let state = this[ _state ]
+        if(state == PAUSE) {
+            this.calcCurQue()
+        }else if(state == STOP || state == COMPLETE) {
+            this.init()
+        }
+    }
+
+    /**计算总的补间队列 */
+    calcAllQue() {
+        // if ( this[ _state ] === STOP ) {
+        //     this.labels.destroy()
+        // }
+
+        this.allQue = []
+        console.log(this.positions)
+        this.positions.reduce((prev, current, index) => {
+            let startTime = 0
+            let prePoint = new TrackPoint( { position: prev, timestamp: prev.timestamp } )
+
+            let billboard = {
+                ...this.billboardOpt,
+            }
+
+            let entity = new Cesium.Entity( {     // 有几个position就对应几个广告图片
+                billboard,
+                position: new Cesium.CallbackProperty( () => {
+                    return Cesium.Cartesian3.fromDegrees(
+                        prePoint.lng, prePoint.lat, prePoint.height
+                    )
+                }, false )
+            } )
+
+            let stepTime = current.timestamp - prePoint.timestamp
+            this[ _timeArr ].push( stepTime )
+            return prev
+        }, 0)
+
+
+    }
+
+    calcCurQue() {
+
+    }
+
     reset() {
         this.cancelAnimationFrame()
         //this.labels.destroy()
@@ -164,10 +218,12 @@ export default class TrackBack {
         // this.points.splice( 0 )
         // this.points.push( this.data[ 0 ] )
         this.billboards.destory()
-        this.billboards.add( this.drawEntity( startPoint ) )
+        this.billboards.add( this.drawBillboard( startPoint ) )
+
+        this.calcAllQue()
     }
 
-    drawEntity(point) {
+    drawBillboard(point) {
         let billboard = {
             ...this.billboardOpt
         }
