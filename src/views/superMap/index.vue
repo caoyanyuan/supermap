@@ -6,7 +6,7 @@
             <router-view></router-view>
         </keep-alive>
     </div>
-</template> 
+</template>
 
 <script>
     import SuperMap from '@/components/superMap'
@@ -14,7 +14,7 @@
 export default {
     name: 'map2',
     props: {
-        
+
     },
     data() {
         return {
@@ -22,7 +22,7 @@ export default {
         }
     },
     methods: {
-        
+
     },
     components: {
         SuperMap
@@ -36,5 +36,3 @@ export default {
         height:100%;width:100%;
     }
 </style>
-
-

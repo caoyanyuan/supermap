@@ -23,7 +23,6 @@ import TrackBack from './Class/TrackBack'
 import Labels from './Class/Labels'
 import Vue from 'vue'
 
-
 export default {
     name: 'gis-player',
 
@@ -68,10 +67,11 @@ export default {
         }
     },
     methods: {
-        
         onChangePlay(value) {
+            this.currentState = value
             switch(value) {
                 case 0:
+                    this.track.play()
                     break;
                 case 1:
                     break;
@@ -87,7 +87,7 @@ export default {
 
                 data.data
                     .forEach( ( item ) => this.data.push( new TrackPoint( item ) ) )
-                
+
                 this.track = new TrackBack( {
                     labels: new Labels( this.labels ),
                     positions: this.data, // 最好不要修改
@@ -96,7 +96,7 @@ export default {
                     player: this,
                 } )
                 console.log(this.track)
-                
+
 
                 // this.startTime = this.track.data[ 0 ].timestamp
                 // this.endTime = this.track.data[ this.track.length - 1 ].timestamp
@@ -140,7 +140,7 @@ export default {
             this.isWatch = true
         }
     }
-    
+
 }
 </script>
 

@@ -1,6 +1,7 @@
 import Router from 'vue-router'
 import SuperMap from '@/views/superMap/index'
 import Health from '@/views/superMap/health/health'
+import Vue from "vue"
 
 const Gis = () => import('@/views/gis')
 const track = () => import('@/views/track')
