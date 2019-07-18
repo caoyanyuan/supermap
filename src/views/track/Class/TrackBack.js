@@ -67,7 +67,7 @@ export default class TrackBack {
         //正常情况下的速度
         this.normalStep = step
 
-        Object.assign(this, { ctl, player, mode, labels, positions })
+        Object.assign(this, { step, ctl, player, mode, labels, positions })
         this[ _step ] = step
         this.billboards = new Entites( {
             detail: '图片集合.',
@@ -92,22 +92,26 @@ export default class TrackBack {
         this[ points ].push( startPoint.lng, startPoint.lat )
 
         this[ promise ] = new Promise( ( re ) => re() )     // 动画添加点的 promise 对象
-        //this[ animate ] = this[ animate ].bind( this )
+        this.$t = new TWEEN.Group()
+        this[ animate ] = this[ animate ].bind( this )
         this.Emitter = new Emitter()
 
         this.calcTime()             //时间的计算
         this.init()                 //显示起点 ，走廊插入第一个点
+
+        this.i = 0
     }
 
     setting() {
-         // 不做窗口变化自适应大小, 窗口改变大小需要刷新
-         let scaleW = ( window.innerWidth / 1920 ) || .5
-         let scaleH = ( window.innerHeight / 1080 ) || .5
-         let _w = 56 * scaleW
-         let _h = 63 * scaleW
+        this[ _state ] = STOP
+        // 不做窗口变化自适应大小, 窗口改变大小需要刷新
+        let scaleW = ( window.innerWidth / 1920 ) || .5
+        let scaleH = ( window.innerHeight / 1080 ) || .5
+        let _w = 56 * scaleW
+        let _h = 63 * scaleW
 
          // 广告牌设置
-         this.billboardOpt = {
+        this.billboardOpt = {
             image: ICON_START,
             width: _w,
             height: _h,
@@ -166,8 +170,23 @@ export default class TrackBack {
         if(state == PAUSE) {
             this.calcCurQue()
         }else if(state == STOP || state == COMPLETE) {
+            //debugger
             this.init()
+            console.log(this.allQue)
+            if ( this.allQue[ 0 ] ) {
+                this[ animate ]()
+                //this.allQue[ 0 ].start()
+            }
         }
+        return this
+    }
+
+    /**
+     * TWEENJS 动画
+     */
+    [ animate ] () {
+        this[ TIMER ] = window.requestAnimationFrame( this[ animate ] )
+        this.$t.update()
     }
 
     /**计算总的补间队列 */
@@ -177,7 +196,7 @@ export default class TrackBack {
         // }
 
         this.allQue = []
-        console.log(this.positions)
+
         this.positions.reduce((prev, current, index) => {
             let startTime = 0
             let prePoint = new TrackPoint( { position: prev, timestamp: prev.timestamp } )
@@ -197,9 +216,78 @@ export default class TrackBack {
 
             let stepTime = current.timestamp - prePoint.timestamp
             this[ _timeArr ].push( stepTime )
+            //console.log(current)
+
+            let tw = new TWEEN.Tween( prePoint, this.$t )
+                .to( {
+                    lng: current.lng, lat: current.lat
+                }, ( stepTime ) / this.step )
+                // 每完成一个补间队列
+                .onUpdate( ( point ) => {
+
+                    this[ onUpdate ]( point, startTime )
+                } )
+                // .repeat( Infinity )
+                .onComplete( (point) => {
+                    console.log(point)
+                    this[ onComplete ]( current, prePoint )
+                } )
+                .onStop( () => {
+                    this[ onStop ]()
+                } )
+                .onStart( (point) => {
+                    console.log(point)
+                    //this.addLabel( prePoint )
+                    this.billboards.add( entity )
+                    startTime = moment()
+                } )
+
+            this.allQue.push( tw )
             return prev
         }, 0)
 
+        console.log(this.$t)
+        this.allQue.reduce( ( pre, cur, index ) => {
+            pre.chain( cur )
+            return cur
+        } )
+
+
+    }
+
+    [ onUpdate ]( point, startTime, isCurQue ) {
+        this[ points ].push( point.lng, point.lat )
+
+        let updateTime = moment() - startTime
+        let curTime, stepTime = updateTime * this.step
+
+        if ( !isCurQue ) {
+            curTime = moment( point.time + stepTime )
+        } else {
+            curTime = moment( point.lastTime + stepTime )
+        }
+
+        this[ _percent ] = ( curTime - this.startTime ) / this.startTime
+        point.curTime = curTime/* .format( TrackPoint.TIMEFORMAT ) */
+        this.i ++
+        if(this.i <= 10 ){
+            console.log(curTime, this.startTime, this.totalTime)
+        }
+        // this.Emitter.trigger( {
+        //     type: 'update',
+        //     point: point,
+        //     time: curTime,
+        //     percent: this[ _percent ]
+        // } )
+
+
+    }
+
+    [ onComplete ]() {
+
+    }
+
+    [ onStop ]() {
 
     }
 
