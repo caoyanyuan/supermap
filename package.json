@@ -16,7 +16,7 @@
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "zp-z": "^0.3.2",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@tweenjs/tween.js": "^17.4.0",
